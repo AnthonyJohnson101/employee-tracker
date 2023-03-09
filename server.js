@@ -92,13 +92,12 @@ function startMenu() {
                 updateEmployeeRolePrompt();
                 break;
 
-            case 'updateRoleSalary':
-                updateRoleSalaryPrompt();
-                break;
             }
         }
     );
 };
+
+
 
 function viewDepartments(){
     const table = `SELECT * FROM department`
@@ -133,17 +132,125 @@ function viewEmployees(){
     })
 };
 
+
+
 function addDepartmentPrompt() {
     inquirer.prompt([
         {
-            name: 'name',
-            message: 'What is the name of the department'
+            name: 'departmentName',
+            message: 'What is the name of the department?'
         }
     ])
         .then(res => {
-        
+            connection.query(
+                `INSERT INTO department (name) VALUES (?);`, 
+                [res.departmentName], 
+
+                (err, res) => { 
+                  err
+                  ? console.log(err)
+                  : viewDepartments() &&
+                  console.log("Department added to database.")
+                }
+              );
         });
 };
 
+function addRolePrompt() {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'roleName',
+            message: 'What is the name of this role?'
+        },
+        {
+            type: 'input', 
+            name: 'salaryAmount', 
+            message: 'What is the salary of this role?'
+        },
+        {
+            type: 'input',
+            name: 'departmentId',
+            message: 'What department does this belong to? (Department ID)'
+        }       
+    ])
+        .then(res => {
+            connection.query(
+                `INSERT INTO role (title, salary, department_id) VALUES ( ?, ?, ?);`, 
+                [res.roleName, res.salaryAmount, res.departmentId],
+
+                (err, res) => { 
+                  err
+                  ? console.log(err)
+                  : viewRoles();
+                }
+              );
+        });
+};
+
+
+function addEmployeePrompt() {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'firstName',
+            message: 'What is this employee\'s first name?'
+        },
+        {
+            type: 'input', 
+            name: 'lastName', 
+            message: 'What is this employee\'s last name?'
+        },
+        {
+            type: 'input',
+            name: 'roleId',
+            message: 'What role will this employee have? (Role ID)'
+        },
+        {
+            type: 'input',
+            name: 'managerId',
+            message: 'What is the ID of this employee\'s manager?'
+        }       
+    ])
+        .then(res => {
+            connection.query(
+                `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES( ?, ?, ?, ?)`, 
+                [res.firstName, res.lastName, res.roleId, res.managerId],
+
+                (err, res) => { 
+                  err
+                  ? console.log(err)
+                  : viewEmployees();
+                }
+              );
+        });
+};
+
+function updateEmployeeRolePrompt() {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'employeeId',
+            message: 'What is the employee\'s ID?'
+        },
+        {
+            type: 'input', 
+            name: 'roleId', 
+            message: 'What is this employee\'s new role? (Role ID)'
+        }   
+    ])
+        .then(res => {
+            connection.query(
+                `UPDATE employee SET role_id = ? WHERE id = ?`,
+                [res.roleId, res.employeeId],
+
+                (err, res) => { 
+                  err
+                  ? console.log(err)
+                  : viewEmployees();
+                }
+              );
+        });
+};
 
 init();

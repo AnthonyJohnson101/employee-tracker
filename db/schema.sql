@@ -13,7 +13,6 @@ CREATE TABLE role (
     title VARCHAR(30) NOT NULL,
     salary DECIMAL NOT NULL,
     department_id INT NOT NULL,
-    INDEX department_index (department_id),
     FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE SET NULL
 );
 
