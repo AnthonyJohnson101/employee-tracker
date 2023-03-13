@@ -23,7 +23,7 @@ function startMenu() {
     inquirer.prompt([
         {
             type: 'list',
-            name: 'choices',
+            name: 'choice',
             message: 'What would you like to do?',
             choices: [
                 {
@@ -101,7 +101,7 @@ function startMenu() {
 
 function viewDepartments(){
     const table = `SELECT * FROM department`
-    db.query(table, (err, results)=> {
+    connection.query(table, (err, results)=> {
         if (err) {
             console.log(err);
         }
@@ -112,7 +112,7 @@ function viewDepartments(){
 
 function viewRoles(){
     const table = `SELECT title, role.id, department.name AS department, salary FROM role JOIN department ON role.department_id = department.id`
-    db.query(table, (err, results)=> {
+    connection.query(table, (err, results)=> {
         if (err) {
             console.log(err);
         }
@@ -123,7 +123,7 @@ function viewRoles(){
 
 function viewEmployees(){
     const table = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, manager.first_name AS manager FROM employee LEFT JOIN employee AS manager ON employee.manager_id = manager.id INNER JOIN role ON role.id = employee.role_id INNER JOIN department ON role.department_id = department.id ORDER BY employee.id`
-    db.query(table, (err, results)=> {
+    connection.query(table, (err, results)=> {
         if (err) {
             console.log(err);
         }
@@ -209,7 +209,7 @@ function addEmployeePrompt() {
         {
             type: 'input',
             name: 'managerId',
-            message: 'What is the ID of this employee\'s manager?'
+            message: 'What is the ID of this employee\'s manager? (if manager, then null)'
         }       
     ])
         .then(res => {
